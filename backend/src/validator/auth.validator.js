@@ -31,3 +31,12 @@ export const validateRegisterUser = [
 
     validateRequest
 ];
+
+export const validateLoginUser = [
+    body("email")
+      .notEmpty().withMessage("Email or contact number is required"),
+    body("password")
+      .notEmpty().withMessage("Password is required"),
+
+    validateRequest
+];

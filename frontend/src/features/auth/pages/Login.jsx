@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../hook/useAuth';
 
 const CURRENT_YEAR = 2026;
 
@@ -7,6 +8,9 @@ const LOOKBOOK_IMAGE =
   'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=80';
 
 const Login = () => {
+  const { handleLogin } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -27,18 +31,40 @@ const Login = () => {
     if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.identifier || !formData.password) {
-      setError('Please enter both your email/phone and password');
+    if (!formData.identifier.trim()) {
+      setError('Please enter your email or contact number');
+      return;
+    }
+    if (!formData.password) {
+      setError('Please enter your password');
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setError('');
+
+    try {
+      await handleLogin({
+        email: formData.identifier.trim(),
+        password: formData.password,
+      });
       setIsSuccess(true);
-    }, 1000);
+      setTimeout(() => {
+        navigate('/');
+      }, 700);
+    } catch (err) {
+      const serverMessage =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[0]?.msg ||
+        (err.code === 'ERR_NETWORK'
+          ? 'Backend server is offline or unreachable on http://localhost:3000'
+          : 'Invalid email or password');
+      setError(serverMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,14 +160,22 @@ const Login = () => {
             </div>
 
             {isSuccess && (
-              <div className="mb-6 p-4 rounded-xl bg-[#facc15]/10 border border-[#facc15]/30 text-sm text-[#facc15]">
-                Welcome back! Redirecting to your personalized clothing feed...
+              <div className="mb-6 p-4 rounded-xl bg-[#facc15]/10 border border-[#facc15]/30 text-sm text-[#facc15] flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Welcome back! Redirecting to storefront...</span>
               </div>
             )}
 
             {error && (
-              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400">
-                {error}
+              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{error}</span>
               </div>
             )}
 
@@ -162,7 +196,7 @@ const Login = () => {
                     type="text"
                     value={formData.identifier}
                     onChange={handleChange}
-                    placeholder="name@snitch.co.in or +91 9876543210"
+                    placeholder="name@snitch.co.in or 9876543210"
                     className="w-full h-12 pl-11 pr-4 rounded-xl bg-zinc-900/90 text-zinc-100 placeholder:text-zinc-600 text-sm border border-zinc-800 hover:border-zinc-700 focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/20 outline-none transition-all duration-200"
                   />
                 </div>
@@ -195,7 +229,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3.5 text-zinc-500 hover:text-zinc-200 p-1"
+                    className="absolute right-3.5 text-zinc-500 hover:text-zinc-200 p-1 cursor-pointer"
                     aria-label="Toggle password"
                   >
                     {showPassword ? (
@@ -230,7 +264,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-12 sm:h-13 py-3.5 px-6 rounded-xl bg-gradient-to-r from-yellow-400 via-[#facc15] to-amber-500 text-zinc-950 font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(250,204,21,0.28)] hover:shadow-[0_0_36px_rgba(250,204,21,0.45)] hover:from-yellow-300 hover:to-amber-400 active:scale-[0.99] transition-all duration-200 cursor-pointer"
+                  className="w-full h-12 sm:h-13 py-3.5 px-6 rounded-xl bg-gradient-to-r from-yellow-400 via-[#facc15] to-amber-500 text-zinc-950 font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(250,204,21,0.28)] hover:shadow-[0_0_36px_rgba(250,204,21,0.45)] hover:from-yellow-300 hover:to-amber-400 active:scale-[0.99] transition-all duration-200 cursor-pointer disabled:opacity-60"
                 >
                   {isSubmitting ? <span>Authenticating...</span> : <span>Sign In to SNITCH</span>}
                 </button>
