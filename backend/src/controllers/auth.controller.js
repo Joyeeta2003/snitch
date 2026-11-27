@@ -14,7 +14,6 @@ async function  sendTokenResponse(user, res, message) {
     res.status(200).json({
         message,
         success:true,
-        token,
         user:{
             id: user._id,
             email: user.email,
