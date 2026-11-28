@@ -660,13 +660,15 @@ const Register = () => {
                     type="button"
                     className="h-11 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs text-zinc-300 font-medium flex items-center justify-center gap-2 hover:bg-zinc-800/80 transition-colors cursor-pointer"
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <a href="/api/auth/google">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="#EA4335" d="M12 5c1.54 0 2.94.55 4.04 1.46l3.03-3.03C17.24 1.7 14.77 1 12 1 7.42 1 3.52 3.58 1.63 7.37l3.71 2.88C6.22 7.44 8.87 5 12 5z" />
                       <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.71 2.88c2.16-1.99 3.42-4.93 3.42-8.7z" />
                       <path fill="#FBBC05" d="M5.34 14.75c-.23-.68-.36-1.41-.36-2.16s.13-1.48.36-2.16L1.63 7.37C.6 9.42 0 11.64 0 12c0 2.36.6 4.58 1.63 6.63l3.71-2.88z" />
                       <path fill="#34A853" d="M12 23c3.24 0 5.95-1.08 7.93-2.91l-3.71-2.88c-1.08.72-2.45 1.16-4.22 1.16-3.13 0-5.78-2.44-6.66-5.25L1.63 18.63C3.52 22.42 7.42 25 12 25z" />
                     </svg>
                     <span>Google</span>
+                    </a>
                   </button>
                 </div>
               </div>
